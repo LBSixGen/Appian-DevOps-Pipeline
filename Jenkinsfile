@@ -7,7 +7,8 @@ pipeline {
           def jenkinsUtils = load "groovy/JenkinsUtils.groovy"
 
           // Retrieve and setup ADM
-          sh "rm -rf adm f4a"
+          sh "rm -rf adm f4a" //removes adm and f4a directory
+          //Goes to artifactory and gets adm zip file
           jenkinsUtils.shNoTrace("curl -H X-JFrog-Art-Api:$ARTIFACTORYAPIKEY -O $ARTIFACTORYURL/appian-devops/adm.zip")
           sh "unzip adm.zip -d adm"
           sh "unzip adm/appian-adm-import*.zip -d adm/appian-import-client"
@@ -16,6 +17,7 @@ pipeline {
           jenkinsUtils.setProperty("adm/appian-version-client/metrics.properties", "pipelineUsage", "true")
 
           // Retrieve and setup F4A
+          //Goes to artifactory and gets f4a zip file
           jenkinsUtils.shNoTrace("curl -H X-JFrog-Art-Api:$ARTIFACTORYAPIKEY -O $ARTIFACTORYURL/appian-devops/f4a.zip")
           sh "unzip f4a.zip -d f4a"
           jenkinsUtils.setProperty("f4a/FitNesseForAppian/configs/metrics.properties", "pipeline.usage", "true")
@@ -73,22 +75,22 @@ pipeline {
         }
       }
     }
-    stage("Deploy to Staging") {
-      steps {
-        script {
-          def jenkinsUtils = load "groovy/JenkinsUtils.groovy"
-          jenkinsUtils.importPackage("import-manager.stag.properties", "${APPLICATIONNAME}.stag.properties")
-        }
-      }
-    }
-    stage("Tag Successful Import into Staging") {
-      steps {
-        script {
-          def githubUtils = load "groovy/GitHubUtils.groovy"
-          githubUtils.tagSuccessfulImport("STAG")
-        }
-      }
-    }
+    //stage("Deploy to Staging") {
+    //  steps {
+     //   script {
+       //   def jenkinsUtils = load "groovy/JenkinsUtils.groovy"
+         // jenkinsUtils.importPackage("import-manager.stag.properties", "${APPLICATIONNAME}.stag.properties")
+       // }
+    //  }
+   // }
+   // stage("Tag Successful Import into Staging") {
+    //  steps {
+     //   script {
+       //   def githubUtils = load "groovy/GitHubUtils.groovy"
+        //  githubUtils.tagSuccessfulImport("STAG")
+       // }
+      //}
+   // }
     stage("Run Acceptance Tests") {
       steps {
         script {
